@@ -6,7 +6,7 @@
 /*   By: jwardeng <jwardeng@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/21 16:31:52 by jwardeng          #+#    #+#             */
-/*   Updated: 2025/02/26 13:46:15 by jwardeng         ###   ########.fr       */
+/*   Updated: 2025/02/26 16:56:55 by jwardeng         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,7 @@ void	*philo_fun(void *arg)
 	threaddata = (t_thread_data *)arg;
 	data = threaddata->data;
 	philo = threaddata->philo;
+	free(threaddata);
 	while (philo->philo_died == 0)
 	{
 		if (forever_schleepi(philo, data) == -1)

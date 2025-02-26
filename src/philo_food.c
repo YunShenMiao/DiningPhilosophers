@@ -6,7 +6,7 @@
 /*   By: jwardeng <jwardeng@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 13:37:48 by jwardeng          #+#    #+#             */
-/*   Updated: 2025/02/26 13:38:07 by jwardeng         ###   ########.fr       */
+/*   Updated: 2025/02/26 16:55:19 by jwardeng         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,17 @@ int	take_forks(t_philo *philo, t_philo *righty, t_data *data)
 	if (philo->philo_died == 1)
 		return (-1);
 	while (philo->eaten > righty->eaten)
+	{
 		usleep(10);
+		if (forever_schleepi(philo, data) == -1)
+		return(-1);
+	}
+	while (philo->fork == 1 || righty->fork == 1)
+	{
+		usleep(10);
+		if (forever_schleepi(philo, data) == -1)
+		return(-1);
+	}
 	if (philo->id % 2 == 1)
 	{
 		pthread_mutex_lock(&philo->lock);
@@ -63,12 +73,16 @@ int	schnacki(t_philo *philo, t_data *data)
 	t_philo	*righty;
 
 	schnacktime = philo->tt_eat * 1000;
-	righty = philo->right;
+	if (philo->id == data->philo_nbr)
+		righty = &data->philo[0];
+	else
+		righty = &data->philo[philo->id];
 	if (take_forks(philo, righty, data) == -1)
 		return (-1);
+	printf("id: %d, lm: %ld\n", philo->id, philo->lastmeal);
+	philo->lastmeal = current_time(philo);
 	print_string("is eating", philo, data);
 	usleep(schnacktime);
-	philo->lastmeal = current_time(philo);
 	return_forks(philo, righty);
 	philo->schnacks--;
 	philo->eaten++;

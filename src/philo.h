@@ -6,7 +6,7 @@
 /*   By: jwardeng <jwardeng@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/21 11:17:59 by jwardeng          #+#    #+#             */
-/*   Updated: 2025/02/26 13:48:07 by jwardeng         ###   ########.fr       */
+/*   Updated: 2025/02/26 16:26:54 by jwardeng         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,13 +23,12 @@ typedef struct s_philo
 {
 	pthread_t		thread;
 	pthread_mutex_t	lock;
-	struct s_philo	*right;
-	int				fork;
-	int				eaten;
-	int				philo_nbr;
 	int				tt_sleep;
 	int				tt_eat;
 	int				tt_die;
+	int				fork;
+	int				eaten;
+	int				philo_nbr;
 	int				schnacks;
 	int				id;
 	int				philo_died;
@@ -55,11 +54,12 @@ typedef struct s_thread_data
 
 //      helper
 int					ft_atoi(const char *str);
-void				free_threads(t_data **data);
 long				current_time(t_philo *philo);
 void				print_string(char *str, t_philo *philo, t_data *data);
+void				gettime(t_data **data);
 //      philo behaviour (philosophy + philo_food)
 void				*philo_fun(void *arg);
 int					schnacki(t_philo *philo, t_data *data);
+int	forever_schleepi(t_philo *philo, t_data *data);
 
 #endif

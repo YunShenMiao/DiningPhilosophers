@@ -6,7 +6,7 @@
 /*   By: jwardeng <jwardeng@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/21 11:20:52 by jwardeng          #+#    #+#             */
-/*   Updated: 2025/02/26 13:47:19 by jwardeng         ###   ########.fr       */
+/*   Updated: 2025/02/26 16:52:48 by jwardeng         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,14 @@ void	print_string(char *str, t_philo *philo, t_data *data)
 	pthread_mutex_unlock(&data->print_lock);
 }
 
+void	gettime(t_data **data)
+{
+	struct timeval	start_time;
+
+	gettimeofday(&start_time, NULL);
+	(*data)->starttime = start_time;
+}
+
 long	current_time(t_philo *philo)
 {
 	struct timeval	current_time;
@@ -28,19 +36,6 @@ long	current_time(t_philo *philo)
 	ms = ((current_time.tv_sec - philo->starttime.tv_sec) * 1000
 			+ (current_time.tv_usec - philo->starttime.tv_usec) / 1000);
 	return (ms);
-}
-
-void	free_threads(t_data **data)
-{
-	int	i;
-
-	i = 1;
-	while (i <= (*data)->philo_nbr)
-	{
-		free((*data)->philo[i].thread);
-		i++;
-	}
-	free((*data)->philo[i].thread);
 }
 
 // converts str to int skipping ws 1+ or -

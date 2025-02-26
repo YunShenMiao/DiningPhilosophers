@@ -6,7 +6,7 @@
 /*   By: jwardeng <jwardeng@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 13:37:48 by jwardeng          #+#    #+#             */
-/*   Updated: 2025/02/26 16:55:19 by jwardeng         ###   ########.fr       */
+/*   Updated: 2025/02/26 17:25:08 by jwardeng         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,14 +19,14 @@ int	take_forks(t_philo *philo, t_philo *righty, t_data *data)
 	while (philo->eaten > righty->eaten)
 	{
 		usleep(10);
-		if (forever_schleepi(philo, data) == -1)
-		return(-1);
+/* 		if (forever_schleepi(philo, data) == -1)
+		return(-1); */
 	}
 	while (philo->fork == 1 || righty->fork == 1)
 	{
 		usleep(10);
-		if (forever_schleepi(philo, data) == -1)
-		return(-1);
+/* 		if (forever_schleepi(philo, data) == -1)
+		return(-1); */
 	}
 	if (philo->id % 2 == 1)
 	{

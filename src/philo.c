@@ -6,7 +6,7 @@
 /*   By: jwardeng <jwardeng@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/21 11:15:18 by jwardeng          #+#    #+#             */
-/*   Updated: 2025/02/26 17:21:11 by jwardeng         ###   ########.fr       */
+/*   Updated: 2025/02/26 17:27:50 by jwardeng         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@
 // need to change philosopher dies, program ends
 // need to know which philo access to which fork (for1, 2, 3etc)
 //	+ generally mutext forkkram
+// prcoesses stop as soon as one philo dies!!
 
 #include "philo.h"
 

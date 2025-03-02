@@ -6,12 +6,12 @@
 /*   By: jwardeng <jwardeng@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/21 11:15:18 by jwardeng          #+#    #+#             */
-/*   Updated: 2025/02/26 17:27:50 by jwardeng         ###   ########.fr       */
+/*   Updated: 2025/03/02 13:20:57 by jwardeng         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-// Abweichung Zeit, eigene usleep?
-// death_check within sleeping & eating usleep
+// print messages after eaten enough times, eaten check sometimes work sometimes not?
+
 // 1 philo
 // starttime -> last_meal issue
 // mutex lock on death
@@ -63,6 +63,7 @@ int	init_threads(t_data **data, int i)
 	threaddata = malloc(sizeof(t_thread_data));
 	if (!threaddata)
 		return (-1);
+		(*data)->schnacks = (*data)->philo[0].schnacks;
 	threaddata->data = (*data);
 	threaddata->philo = &(*data)->philo[i];
 	if (pthread_create(&(*data)->philo[i].thread, NULL, &philo_fun,
@@ -107,8 +108,8 @@ int	init_data(int argc, char *argv[], t_data **data)
 		return (-1);
 	gettime(data);
 	(*data)->philo_nbr = ft_atoi(argv[1]);
-	(*data)->gesnacked = 0;
 	pthread_mutex_init(&(*data)->print_lock, NULL);
+	pthread_mutex_init(&(*data)->death_lock, NULL);
 	(*data)->philo = malloc(sizeof(t_philo) * (*data)->philo_nbr);
 	if (!((*data)->philo))
 		return (free(*data), -1);
@@ -138,6 +139,7 @@ int	main(int argc, char *argv[])
 	}
 	pthread_join(data->monitor, NULL);
 	pthread_mutex_destroy(&data->print_lock);
+	pthread_mutex_destroy(&data->death_lock);
 	free(data->philo);
 	free(data);
 	return (0);

@@ -6,7 +6,7 @@
 /*   By: jwardeng <jwardeng@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/21 11:17:59 by jwardeng          #+#    #+#             */
-/*   Updated: 2025/02/26 16:26:54 by jwardeng         ###   ########.fr       */
+/*   Updated: 2025/03/02 13:14:59 by jwardeng         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,9 @@ typedef struct s_data
 	t_philo			*philo;
 	pthread_t		monitor;
 	pthread_mutex_t	print_lock;
+	pthread_mutex_t death_lock;
 	int				philo_nbr;
-	int				gesnacked;
+	int				schnacks;
 	struct timeval	starttime;
 }					t_data;
 
@@ -57,6 +58,7 @@ int					ft_atoi(const char *str);
 long				current_time(t_philo *philo);
 void				print_string(char *str, t_philo *philo, t_data *data);
 void				gettime(t_data **data);
+int					ft_usleep(t_philo *philo, t_data *data, long sleep);
 //      philo behaviour (philosophy + philo_food)
 void				*philo_fun(void *arg);
 int					schnacki(t_philo *philo, t_data *data);

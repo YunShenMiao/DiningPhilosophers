@@ -6,7 +6,7 @@
 /*   By: jwardeng <jwardeng@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/21 11:20:52 by jwardeng          #+#    #+#             */
-/*   Updated: 2025/02/26 16:52:48 by jwardeng         ###   ########.fr       */
+/*   Updated: 2025/03/02 13:19:58 by jwardeng         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,25 @@
 
 void	print_string(char *str, t_philo *philo, t_data *data)
 {
+	if (philo->philo_died == 1/*  && philo->eaten != data->schnacks -1 */)
+	return;
 	pthread_mutex_lock(&data->print_lock);
 	printf("%ld %d %s\n", current_time(philo), philo->id, str);
 	pthread_mutex_unlock(&data->print_lock);
+}
+
+int	ft_usleep(t_philo *philo, t_data *data, long sleep)
+{
+	long start;
+	
+	start = current_time(philo);
+	while((current_time(philo) - start) < sleep)
+	{
+	if (forever_schleepi(philo, data) == -1)
+	return(-1);
+	usleep(500);
+	}
+	return(1);
 }
 
 void	gettime(t_data **data)

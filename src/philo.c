@@ -6,13 +6,13 @@
 /*   By: jwardeng <jwardeng@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/21 11:15:18 by jwardeng          #+#    #+#             */
-/*   Updated: 2025/03/02 13:20:57 by jwardeng         ###   ########.fr       */
+/*   Updated: 2025/03/09 14:26:44 by jwardeng         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 // print messages after eaten enough times, eaten check sometimes work sometimes not?
+// issue if deathtime is smaller eattime
 
-// 1 philo
 // starttime -> last_meal issue
 // mutex lock on death
 // maybe lock on init threads until all threads are initia;ized
@@ -32,27 +32,52 @@ void	*monitor_fun(void *arg)
 {
 	t_data	*data;
 	int		i;
-	int		snacks;
 
 	data = (t_data *)arg;
+	if (data->philo_nbr == 1)
+	return(NULL);
 	while (1)
 	{
 		i = 0;
-		snacks = 0;
+		pthread_mutex_lock(&data->meal_lock);
+		data->full = 0;
+		pthread_mutex_unlock(&data->meal_lock);
 		while (i < data->philo_nbr)
 		{
+			pthread_mutex_lock(&data->death_lock);
 			if (data->philo[i].philo_died == 1)
+			{
+				pthread_mutex_unlock(&data->death_lock);
 				break ;
+			}
+			pthread_mutex_unlock(&data->death_lock);
+			pthread_mutex_lock(&data->meal_lock);
 			if (data->philo[i].schnacks > 0 || data->philo[i].schnacks < 0)
-				snacks = 1;
+				data->full = 1;
+			pthread_mutex_unlock(&data->meal_lock);
 			i++;
+			usleep(5000);
 		}
-		if ((data->philo[i].philo_died == 1) || snacks == 0)
-			break ;
-	}
-	i = -1;
-	while (i++, i < data->philo_nbr)
+		if (i < data->philo_nbr && data->philo[i].philo_died == 1)
+		{
+		pthread_mutex_lock(&data->death_lock);
+			i = -1;
+		while (i++, i < data->philo_nbr)
+		{
 		data->philo[i].philo_died = 1;
+		}
+		pthread_mutex_unlock(&data->death_lock);
+		break;
+		}
+		pthread_mutex_lock(&data->meal_lock);
+		if (i == data->philo_nbr && data->full == 0)
+		{
+			data->full = -1;
+			pthread_mutex_unlock(&data->meal_lock);
+			break ;
+		}
+		pthread_mutex_unlock(&data->meal_lock);
+	}
 	return (NULL);
 }
 
@@ -61,11 +86,18 @@ int	init_threads(t_data **data, int i)
 	t_thread_data	*threaddata;
 
 	threaddata = malloc(sizeof(t_thread_data));
-	if (!threaddata)
-		return (-1);
-		(*data)->schnacks = (*data)->philo[0].schnacks;
+	if (threaddata == NULL)
+		return (/* pthread_mutex_lock(&(*data)->death_lock),
+		pthread_mutex_unlock(&(*data)->meal_lock),
+		pthread_mutex_unlock(&(*data)->print_lock),
+		pthread_mutex_unlock(&(*data)->philo[i].lock),  */-1);
+	(*data)->schnacks = (*data)->philo[0].schnacks;
 	threaddata->data = (*data);
 	threaddata->philo = &(*data)->philo[i];
+/* 	pthread_mutex_unlock(&(*data)->death_lock);
+	pthread_mutex_unlock(&(*data)->meal_lock);
+	pthread_mutex_unlock(&(*data)->print_lock);
+	pthread_mutex_unlock(&(*data)->philo[i].lock); */
 	if (pthread_create(&(*data)->philo[i].thread, NULL, &philo_fun,
 			threaddata) != 0)
 		return (free(threaddata), -1);
@@ -80,6 +112,10 @@ int	init_philo(int argc, char *argv[], t_data **data)
 	while (i < (*data)->philo_nbr)
 	{
 		pthread_mutex_init(&(*data)->philo[i].lock, NULL);
+/* 		pthread_mutex_lock(&(*data)->death_lock);
+		pthread_mutex_lock(&(*data)->meal_lock);
+		pthread_mutex_lock(&(*data)->print_lock);
+		pthread_mutex_lock(&(*data)->philo[i].lock); */
 		(*data)->philo[i].philo_nbr = (*data)->philo_nbr;
 		(*data)->philo[i].starttime = (*data)->starttime;
 		(*data)->philo[i].lastmeal = 0;
@@ -88,7 +124,8 @@ int	init_philo(int argc, char *argv[], t_data **data)
 		(*data)->philo[i].tt_eat = ft_atoi(argv[3]);
 		(*data)->philo[i].tt_sleep = ft_atoi(argv[4]);
 		(*data)->philo[i].philo_died = 0;
-		(*data)->philo[i].fork = 0;
+		(*data)->philo[i].own_fork = 0;
+		(*data)->philo[i].righty_fork = 0;
 		(*data)->philo[i].eaten = 0;
 		if (argc == 6)
 			(*data)->philo[i].schnacks = ft_atoi(argv[5]);
@@ -98,21 +135,30 @@ int	init_philo(int argc, char *argv[], t_data **data)
 			return (-1);
 		i++;
 	}
+	pthread_mutex_lock(&(*data)->print_lock);
+	(*data)->ready = 1;
+	pthread_mutex_unlock(&(*data)->print_lock);
 	return (0);
 }
 
 int	init_data(int argc, char *argv[], t_data **data)
 {
-	*data = malloc(sizeof(t_data));
+	(*data) = malloc(sizeof(t_data));
 	if (!(*data))
 		return (-1);
-	gettime(data);
 	(*data)->philo_nbr = ft_atoi(argv[1]);
+	(*data)->full = 0;
+	(*data)->ready = 0;
 	pthread_mutex_init(&(*data)->print_lock, NULL);
 	pthread_mutex_init(&(*data)->death_lock, NULL);
+	pthread_mutex_init(&(*data)->meal_lock, NULL);
+	pthread_mutex_init(&(*data)->clean_lock, NULL);
+	(*data)->clean = 0;
+	(*data)->pl = 0;
 	(*data)->philo = malloc(sizeof(t_philo) * (*data)->philo_nbr);
 	if (!((*data)->philo))
 		return (free(*data), -1);
+	gettime(data);
 	if (init_philo(argc, argv, data) == -1)
 		return (free(*data), free((*data)->philo), -1);
 	if (pthread_create(&(*data)->monitor, NULL, &monitor_fun, *data) != 0)
@@ -134,14 +180,21 @@ int	main(int argc, char *argv[])
 	{
 		if (pthread_join(data->philo[i].thread, NULL) != 0)
 			return (1);
+		i++;
+	}
+	i = 0;
+	while (i < data->philo_nbr)
+	{
 		pthread_mutex_destroy(&data->philo[i].lock);
 		i++;
 	}
-	pthread_join(data->monitor, NULL);
+	if (pthread_join(data->monitor, NULL) != 0)
+	return(1);
 	pthread_mutex_destroy(&data->print_lock);
 	pthread_mutex_destroy(&data->death_lock);
 	free(data->philo);
 	free(data);
+	fflush(stdout);
 	return (0);
 }
 

@@ -6,16 +6,14 @@
 /*   By: jwardeng <jwardeng@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/21 11:20:52 by jwardeng          #+#    #+#             */
-/*   Updated: 2025/03/02 13:19:58 by jwardeng         ###   ########.fr       */
+/*   Updated: 2025/03/09 14:26:40 by jwardeng         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	print_string(char *str, t_philo *philo, t_data *data)
+void	print_string(const char *str, t_philo *philo, t_data *data)
 {
-	if (philo->philo_died == 1/*  && philo->eaten != data->schnacks -1 */)
-	return;
 	pthread_mutex_lock(&data->print_lock);
 	printf("%ld %d %s\n", current_time(philo), philo->id, str);
 	pthread_mutex_unlock(&data->print_lock);

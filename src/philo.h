@@ -6,7 +6,7 @@
 /*   By: jwardeng <jwardeng@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/21 11:17:59 by jwardeng          #+#    #+#             */
-/*   Updated: 2025/03/09 14:26:46 by jwardeng         ###   ########.fr       */
+/*   Updated: 2025/03/11 11:56:07 by jwardeng         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,11 +28,9 @@ typedef struct s_philo
 	int				tt_die;
 	int				own_fork;
 	int				righty_fork;
-	int				eaten;
 	int				philo_nbr;
 	int				schnacks;
 	int				id;
-	int				philo_died;
 	struct timeval	starttime;
 	long			lastmeal;
 }					t_philo;
@@ -42,12 +40,13 @@ typedef struct s_data
 	t_philo			*philo;
 	pthread_t		monitor;
 	pthread_mutex_t	print_lock;
-	pthread_mutex_t death_lock;
-	pthread_mutex_t meal_lock;
-	pthread_mutex_t	clean_lock;
-	int 			ready;
-	int				clean;
+	pthread_mutex_t	meal_lock;
+	pthread_mutex_t	full_lock;
+	pthread_mutex_t	snack_lock;
+	pthread_mutex_t	stop_lock;
 	int				pl;
+	int				stop;
+	int				ready;
 	int				philo_nbr;
 	int				schnacks;
 	int				full;
@@ -65,10 +64,15 @@ int					ft_atoi(const char *str);
 long				current_time(t_philo *philo);
 void				print_string(const char *str, t_philo *philo, t_data *data);
 void				gettime(t_data **data);
-int					ft_usleep(t_philo *philo, t_data *data, long sleep);
+int					ft_usleep(t_philo *philo, long sleep);
 //      philo behaviour (philosophy + philo_food)
 void				*philo_fun(void *arg);
 int					schnacki(t_philo *philo, t_data *data);
-int	forever_schleepi(t_philo *philo, t_data *data);
-void	return_forks (t_data *data, t_philo *philo, t_philo *righty);
+int					forever_schleepi(t_philo *philo, t_data *data);
+void				one_philo(t_philo *philo, t_data *data);
+//		data initialization
+int					init_data(int argc, char *argv[], t_data **data);
+// 		monitoring
+void				*monitor_fun(void *arg);
+
 #endif

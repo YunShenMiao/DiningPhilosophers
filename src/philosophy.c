@@ -6,76 +6,60 @@
 /*   By: jwardeng <jwardeng@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/21 16:31:52 by jwardeng          #+#    #+#             */
-/*   Updated: 2025/03/09 14:26:48 by jwardeng         ###   ########.fr       */
+/*   Updated: 2025/03/11 11:44:29 by jwardeng         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+// change: monitor is checking last meal constantly for all philos,
+// sets bool finish to 1 immediately
+// in philo checks the bool to stop the program
+// as soon as 1 & thread prints the message
+// mutex to protect philo from die when start eat.
+
 #include "philo.h"
 
-int	thinky(t_philo *philo, t_data *data)
+void	thinky(t_philo *philo, t_data *data)
 {
-	if (forever_schleepi(philo, data) == -1)
-	return(-1);
-	/* if (philo->philo_died == 1 || data->full == -1)
-		return (-1); */
-		pthread_mutex_lock(&data->death_lock);
-	if (philo->philo_died == 1)
-	{
-		pthread_mutex_unlock(&data->death_lock);
-		return (-1);
-	}
-	pthread_mutex_unlock(&data->death_lock);
 	print_string("is thinking", philo, data);
-	return (0);
 }
 
-int	schleepi(t_philo *philo, t_data *data)
+void	schleepi(t_philo *philo, t_data *data)
 {
-	/* if (philo->philo_died == 1 || data->full == -1)
-		return (-1); */
-	if (forever_schleepi(philo, data) == -1)
-	return(-1);
-	pthread_mutex_lock(&data->death_lock);
-	if (philo->philo_died == 1)
-	{
-		pthread_mutex_unlock(&data->death_lock);
-		return (-1);
-	}
-	pthread_mutex_unlock(&data->death_lock);
 	print_string("is sleeping", philo, data);
-	if (ft_usleep(philo, data, philo->tt_sleep) == -1)
-	return(-1);
-	return (1);
+	ft_usleep(philo, philo->tt_sleep);
 }
 
-// maybe issue deadlock, issue when philo dies after trying to fix some hellgrind stufff...
 int	forever_schleepi(t_philo *philo, t_data *data)
 {
-	/* printf("id: %d, lm: %ld ttd %d ct %ld\n", philo->id, philo->lastmeal, philo->tt_die, current_time(philo)); */
-	pthread_mutex_lock(&data->meal_lock);
-	if (data->full == -1)
-	return(pthread_mutex_unlock(&data->meal_lock), -1);
-	pthread_mutex_unlock(&data->meal_lock);
-	if (philo->lastmeal + (long)philo->tt_die <= current_time(philo))
-	{
-		pthread_mutex_lock(&data->death_lock);
-		if (philo->philo_died == 1)
-		{
-			pthread_mutex_unlock(&data->death_lock);
-			return (-1);
-		}
-		print_string("died", philo, data);
-		philo->philo_died = 1;
-		pthread_mutex_unlock(&data->death_lock);
+	int	x;
+
+	philo->philo_nbr = data->philo_nbr;
+	pthread_mutex_lock(&data->full_lock);
+	x = data->full;
+	pthread_mutex_unlock(&data->full_lock);
+	if (x == -1)
 		return (-1);
-	}
+	pthread_mutex_lock(&data->stop_lock);
+	x = data->stop;
+	pthread_mutex_unlock(&data->stop_lock);
+	if (x == 1)
+		return (-1);
 	return (1);
 }
 
-void one_philo(t_philo *philo, t_data *data)
+void	wait_threads(t_data *data)
 {
-	ft_usleep(philo, data, philo->tt_die);
-	print_string("died", philo, data);
+	int	begin;
+
+	while (1)
+	{
+		pthread_mutex_lock(&data->stop_lock);
+		begin = data->ready;
+		pthread_mutex_unlock(&data->stop_lock);
+		if (begin == 1)
+			break ;
+		usleep(100);
+	}
 }
 
 void	*philo_fun(void *arg)
@@ -83,39 +67,24 @@ void	*philo_fun(void *arg)
 	t_thread_data	*threaddata;
 	t_data			*data;
 	t_philo			*philo;
-	int x;
 
 	threaddata = (t_thread_data *)arg;
 	data = threaddata->data;
 	philo = threaddata->philo;
-	while(1)
-	{
-		pthread_mutex_lock(&data->print_lock);
-		x = data->ready;
-		pthread_mutex_unlock(&data->print_lock);
-		if (x == 1)
-		break;
-		usleep(100);
-	}
-	if (philo->id % 2 == 0)
-	ft_usleep(philo, data, 1);
+	free(threaddata);
+	wait_threads(data);
 	if (data->philo_nbr == 1)
-	{
-		one_philo(philo, data);
-		return(NULL);
-	}
+		return (one_philo(philo, data), NULL);
+	if (philo->id % 2 == 0)
+		ft_usleep(philo, philo[0].tt_eat);
 	while (1)
 	{
-		if (schnacki(philo, data) == -1)
+		if (forever_schleepi(philo, data) == -1)
 			break ;
-		if (schleepi(philo, data) == -1)
-			break ;
-		if (thinky(philo, data) == -1)
-			break ;
+		schnacki(philo, data);
+		schleepi(philo, data);
+		thinky(philo, data);
 	}
-	free(threaddata);
-	usleep(10000);
+	usleep(500);
 	return (NULL);
 }
-
-// eat -> sleep -> think

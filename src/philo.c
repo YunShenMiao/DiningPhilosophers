@@ -6,11 +6,12 @@
 /*   By: jwardeng <jwardeng@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/21 11:15:18 by jwardeng          #+#    #+#             */
-/*   Updated: 2025/03/09 14:26:44 by jwardeng         ###   ########.fr       */
+/*   Updated: 2025/03/11 11:40:10 by jwardeng         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-// print messages after eaten enough times, eaten check sometimes work sometimes not?
+// print messages after eaten enough times,
+// eaten check sometimes work sometimes not?
 // issue if deathtime is smaller eattime
 
 // starttime -> last_meal issue
@@ -28,158 +29,28 @@
 
 #include "philo.h"
 
-void	*monitor_fun(void *arg)
+int	check_input(int argc, char *argv[])
 {
-	t_data	*data;
-	int		i;
-
-	data = (t_data *)arg;
-	if (data->philo_nbr == 1)
-	return(NULL);
-	while (1)
+	if (ft_atoi(argv[1]) < 0 || ft_atoi(argv[2]) < 0 || ft_atoi(argv[3]) < 0
+		|| ft_atoi(argv[4]) < 0)
+		return (-1);
+	if (argc == 6)
 	{
-		i = 0;
-		pthread_mutex_lock(&data->meal_lock);
-		data->full = 0;
-		pthread_mutex_unlock(&data->meal_lock);
-		while (i < data->philo_nbr)
-		{
-			pthread_mutex_lock(&data->death_lock);
-			if (data->philo[i].philo_died == 1)
-			{
-				pthread_mutex_unlock(&data->death_lock);
-				break ;
-			}
-			pthread_mutex_unlock(&data->death_lock);
-			pthread_mutex_lock(&data->meal_lock);
-			if (data->philo[i].schnacks > 0 || data->philo[i].schnacks < 0)
-				data->full = 1;
-			pthread_mutex_unlock(&data->meal_lock);
-			i++;
-			usleep(5000);
-		}
-		if (i < data->philo_nbr && data->philo[i].philo_died == 1)
-		{
-		pthread_mutex_lock(&data->death_lock);
-			i = -1;
-		while (i++, i < data->philo_nbr)
-		{
-		data->philo[i].philo_died = 1;
-		}
-		pthread_mutex_unlock(&data->death_lock);
-		break;
-		}
-		pthread_mutex_lock(&data->meal_lock);
-		if (i == data->philo_nbr && data->full == 0)
-		{
-			data->full = -1;
-			pthread_mutex_unlock(&data->meal_lock);
-			break ;
-		}
-		pthread_mutex_unlock(&data->meal_lock);
+		if (ft_atoi(argv[5]) < 0)
+			return (-1);
 	}
-	return (NULL);
-}
-
-int	init_threads(t_data **data, int i)
-{
-	t_thread_data	*threaddata;
-
-	threaddata = malloc(sizeof(t_thread_data));
-	if (threaddata == NULL)
-		return (/* pthread_mutex_lock(&(*data)->death_lock),
-		pthread_mutex_unlock(&(*data)->meal_lock),
-		pthread_mutex_unlock(&(*data)->print_lock),
-		pthread_mutex_unlock(&(*data)->philo[i].lock),  */-1);
-	(*data)->schnacks = (*data)->philo[0].schnacks;
-	threaddata->data = (*data);
-	threaddata->philo = &(*data)->philo[i];
-/* 	pthread_mutex_unlock(&(*data)->death_lock);
-	pthread_mutex_unlock(&(*data)->meal_lock);
-	pthread_mutex_unlock(&(*data)->print_lock);
-	pthread_mutex_unlock(&(*data)->philo[i].lock); */
-	if (pthread_create(&(*data)->philo[i].thread, NULL, &philo_fun,
-			threaddata) != 0)
-		return (free(threaddata), -1);
 	return (1);
 }
 
-int	init_philo(int argc, char *argv[], t_data **data)
+int	end_simulation(t_data *data)
 {
 	int	i;
 
 	i = 0;
-	while (i < (*data)->philo_nbr)
-	{
-		pthread_mutex_init(&(*data)->philo[i].lock, NULL);
-/* 		pthread_mutex_lock(&(*data)->death_lock);
-		pthread_mutex_lock(&(*data)->meal_lock);
-		pthread_mutex_lock(&(*data)->print_lock);
-		pthread_mutex_lock(&(*data)->philo[i].lock); */
-		(*data)->philo[i].philo_nbr = (*data)->philo_nbr;
-		(*data)->philo[i].starttime = (*data)->starttime;
-		(*data)->philo[i].lastmeal = 0;
-		(*data)->philo[i].id = i + 1;
-		(*data)->philo[i].tt_die = ft_atoi(argv[2]);
-		(*data)->philo[i].tt_eat = ft_atoi(argv[3]);
-		(*data)->philo[i].tt_sleep = ft_atoi(argv[4]);
-		(*data)->philo[i].philo_died = 0;
-		(*data)->philo[i].own_fork = 0;
-		(*data)->philo[i].righty_fork = 0;
-		(*data)->philo[i].eaten = 0;
-		if (argc == 6)
-			(*data)->philo[i].schnacks = ft_atoi(argv[5]);
-		else
-			(*data)->philo[i].schnacks = -2;
-		if (init_threads(data, i) == -1)
-			return (-1);
-		i++;
-	}
-	pthread_mutex_lock(&(*data)->print_lock);
-	(*data)->ready = 1;
-	pthread_mutex_unlock(&(*data)->print_lock);
-	return (0);
-}
-
-int	init_data(int argc, char *argv[], t_data **data)
-{
-	(*data) = malloc(sizeof(t_data));
-	if (!(*data))
-		return (-1);
-	(*data)->philo_nbr = ft_atoi(argv[1]);
-	(*data)->full = 0;
-	(*data)->ready = 0;
-	pthread_mutex_init(&(*data)->print_lock, NULL);
-	pthread_mutex_init(&(*data)->death_lock, NULL);
-	pthread_mutex_init(&(*data)->meal_lock, NULL);
-	pthread_mutex_init(&(*data)->clean_lock, NULL);
-	(*data)->clean = 0;
-	(*data)->pl = 0;
-	(*data)->philo = malloc(sizeof(t_philo) * (*data)->philo_nbr);
-	if (!((*data)->philo))
-		return (free(*data), -1);
-	gettime(data);
-	if (init_philo(argc, argv, data) == -1)
-		return (free(*data), free((*data)->philo), -1);
-	if (pthread_create(&(*data)->monitor, NULL, &monitor_fun, *data) != 0)
-		return (free(*data), free((*data)->philo), -1);
-	return (1);
-}
-
-int	main(int argc, char *argv[])
-{
-	t_data	*data;
-	int		i;
-
-	if (argc < 5 || argc > 6)
-		return (printf("Wrong amount of arguments\n"), 1);
-	if (init_data(argc, argv, &data) == -1)
-		return (printf("Initialization error\n"), 1);
-	i = 0;
 	while (i < data->philo_nbr)
 	{
 		if (pthread_join(data->philo[i].thread, NULL) != 0)
-			return (1);
+			return (-1);
 		i++;
 	}
 	i = 0;
@@ -189,12 +60,30 @@ int	main(int argc, char *argv[])
 		i++;
 	}
 	if (pthread_join(data->monitor, NULL) != 0)
-	return(1);
+		return (-1);
 	pthread_mutex_destroy(&data->print_lock);
-	pthread_mutex_destroy(&data->death_lock);
+	pthread_mutex_destroy(&data->stop_lock);
+	pthread_mutex_destroy(&data->meal_lock);
+	pthread_mutex_destroy(&data->snack_lock);
+	pthread_mutex_destroy(&data->full_lock);
 	free(data->philo);
 	free(data);
-	fflush(stdout);
+	return (1);
+}
+
+int	main(int argc, char *argv[])
+{
+	t_data	*data;
+
+	if (argc < 5 || argc > 6)
+		return (printf("Wrong amount of arguments\n"), 1);
+	if (check_input(argc, argv) == -1)
+		return (printf("invalid input\n"), 1);
+	if (init_data(argc, argv, &data) == -1)
+		return (printf("Initialization error\n"), 1);
+	printf("miao\n");
+	if (end_simulation(data) == -1)
+		return (1);
 	return (0);
 }
 

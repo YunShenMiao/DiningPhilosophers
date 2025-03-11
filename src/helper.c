@@ -6,7 +6,7 @@
 /*   By: jwardeng <jwardeng@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/21 11:20:52 by jwardeng          #+#    #+#             */
-/*   Updated: 2025/03/09 14:26:40 by jwardeng         ###   ########.fr       */
+/*   Updated: 2025/03/11 11:43:29 by jwardeng         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,22 +15,21 @@
 void	print_string(const char *str, t_philo *philo, t_data *data)
 {
 	pthread_mutex_lock(&data->print_lock);
-	printf("%ld %d %s\n", current_time(philo), philo->id, str);
+	if (forever_schleepi(philo, data) != -1)
+		printf("%ld %d %s\n", current_time(philo), philo->id, str);
 	pthread_mutex_unlock(&data->print_lock);
 }
 
-int	ft_usleep(t_philo *philo, t_data *data, long sleep)
+int	ft_usleep(t_philo *philo, long sleep)
 {
-	long start;
-	
+	long	start;
+
 	start = current_time(philo);
-	while((current_time(philo) - start) < sleep)
+	while ((current_time(philo) - start) < sleep)
 	{
-	if (forever_schleepi(philo, data) == -1)
-	return(-1);
-	usleep(500);
+		usleep(100);
 	}
-	return(1);
+	return (1);
 }
 
 void	gettime(t_data **data)

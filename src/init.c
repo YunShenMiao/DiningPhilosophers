@@ -6,7 +6,7 @@
 /*   By: jwardeng <jwardeng@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 16:45:16 by jwardeng          #+#    #+#             */
-/*   Updated: 2025/03/11 11:50:24 by jwardeng         ###   ########.fr       */
+/*   Updated: 2025/04/24 16:23:51 by jwardeng         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,17 +14,16 @@
 
 int	init_threads(t_data **data, int i)
 {
-	t_thread_data	*threaddata;
+	t_philo_con	*philocontext;
 
-	threaddata = malloc(sizeof(t_thread_data));
-	if (threaddata == NULL)
+	philocontext = malloc(sizeof(t_philo_con));
+	if (philocontext == NULL)
 		return (-1);
-	(*data)->schnacks = (*data)->philo[0].schnacks;
-	threaddata->data = (*data);
-	threaddata->philo = &(*data)->philo[i];
+	philocontext->data = (*data);
+	philocontext->philo = &(*data)->philo[i];
 	if (pthread_create(&(*data)->philo[i].thread, NULL, &philo_fun,
-			threaddata) != 0)
-		return (free(threaddata), -1);
+			philocontext) != 0)
+		return (free(philocontext), -1);
 	return (1);
 }
 
@@ -36,9 +35,8 @@ int	init_philo(int argc, char *argv[], t_data **data)
 	while (i < (*data)->philo_nbr)
 	{
 		pthread_mutex_init(&(*data)->philo[i].lock, NULL);
-		(*data)->philo[i].philo_nbr = (*data)->philo_nbr;
 		(*data)->philo[i].starttime = (*data)->starttime;
-		(*data)->philo[i].lastmeal = 0;
+		(*data)->philo[i].lastmeal = current_time((*data)->philo);
 		(*data)->philo[i].id = i + 1;
 		(*data)->philo[i].tt_die = ft_atoi(argv[2]);
 		(*data)->philo[i].tt_eat = ft_atoi(argv[3]);
@@ -63,14 +61,12 @@ int	init_data(int argc, char *argv[], t_data **data)
 		return (-1);
 	(*data)->philo_nbr = ft_atoi(argv[1]);
 	(*data)->full = 0;
-	(*data)->ready = 0;
-	(*data)->stop = 0;
-	(*data)->pl = 0;
+	(*data)->beg_stop = 0;
 	pthread_mutex_init(&(*data)->print_lock, NULL);
 	pthread_mutex_init(&(*data)->meal_lock, NULL);
 	pthread_mutex_init(&(*data)->full_lock, NULL);
 	pthread_mutex_init(&(*data)->snack_lock, NULL);
-	pthread_mutex_init(&(*data)->stop_lock, NULL);
+	pthread_mutex_init(&(*data)->beg_stop_lock, NULL);
 	(*data)->philo = malloc(sizeof(t_philo) * (*data)->philo_nbr);
 	if (!((*data)->philo))
 		return (free(*data), -1);
@@ -79,8 +75,8 @@ int	init_data(int argc, char *argv[], t_data **data)
 		return (free(*data), free((*data)->philo), -1);
 	if (pthread_create(&(*data)->monitor, NULL, &monitor_fun, *data) != 0)
 		return (free(*data), free((*data)->philo), -1);
-	pthread_mutex_lock(&(*data)->stop_lock);
-	(*data)->ready = 1;
-	pthread_mutex_unlock(&(*data)->stop_lock);
+	pthread_mutex_lock(&(*data)->beg_stop_lock);
+	(*data)->beg_stop = 1;
+	pthread_mutex_unlock(&(*data)->beg_stop_lock);
 	return (1);
 }

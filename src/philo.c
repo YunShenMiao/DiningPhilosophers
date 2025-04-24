@@ -6,7 +6,7 @@
 /*   By: jwardeng <jwardeng@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/21 11:15:18 by jwardeng          #+#    #+#             */
-/*   Updated: 2025/03/11 11:40:10 by jwardeng         ###   ########.fr       */
+/*   Updated: 2025/04/24 16:42:41 by jwardeng         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@
 
 int	check_input(int argc, char *argv[])
 {
-	if (ft_atoi(argv[1]) < 0 || ft_atoi(argv[2]) < 0 || ft_atoi(argv[3]) < 0
+	if (ft_atoi(argv[1]) <= 0 || ft_atoi(argv[2]) < 0 || ft_atoi(argv[3]) < 0
 		|| ft_atoi(argv[4]) < 0)
 		return (-1);
 	if (argc == 6)
@@ -62,7 +62,7 @@ int	end_simulation(t_data *data)
 	if (pthread_join(data->monitor, NULL) != 0)
 		return (-1);
 	pthread_mutex_destroy(&data->print_lock);
-	pthread_mutex_destroy(&data->stop_lock);
+	pthread_mutex_destroy(&data->beg_stop_lock);
 	pthread_mutex_destroy(&data->meal_lock);
 	pthread_mutex_destroy(&data->snack_lock);
 	pthread_mutex_destroy(&data->full_lock);
@@ -81,7 +81,6 @@ int	main(int argc, char *argv[])
 		return (printf("invalid input\n"), 1);
 	if (init_data(argc, argv, &data) == -1)
 		return (printf("Initialization error\n"), 1);
-	printf("miao\n");
 	if (end_simulation(data) == -1)
 		return (1);
 	return (0);

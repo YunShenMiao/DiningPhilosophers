@@ -6,7 +6,7 @@
 /*   By: jwardeng <jwardeng@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 13:37:48 by jwardeng          #+#    #+#             */
-/*   Updated: 2025/03/11 11:44:16 by jwardeng         ###   ########.fr       */
+/*   Updated: 2025/04/24 14:25:16 by jwardeng         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,11 +39,11 @@ int	equality(t_philo *philo, t_data *data)
 
 void	take_forks(t_philo *philo, t_philo *righty, t_data *data)
 {
-	if (data->philo_nbr % 2 != 0)
-	{
-		while (equality(philo, data) == -1)
-			ft_usleep(philo, 10);
-	}
+	// if (data->philo_nbr % 2 != 0)
+	// {
+	// 	while (equality(philo, data) == -1)
+	// 		ft_usleep(philo, 10);
+	// }
 	if (philo->id % 2 == 1)
 	{
 		pthread_mutex_lock(&philo->lock);

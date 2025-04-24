@@ -6,7 +6,7 @@
 /*   By: jwardeng <jwardeng@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 18:25:12 by jwardeng          #+#    #+#             */
-/*   Updated: 2025/03/11 11:39:43 by jwardeng         ###   ########.fr       */
+/*   Updated: 2025/04/24 15:32:53 by jwardeng         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,9 @@ int	check_death(t_data *data, int i)
 		if (mealtime
 			+ (long)data->philo[i].tt_die <= current_time(&data->philo[i]))
 		{
-			pthread_mutex_lock(&data->stop_lock);
-			data->stop = 1;
-			pthread_mutex_unlock(&data->stop_lock);
+			pthread_mutex_lock(&data->beg_stop_lock);
+			data->beg_stop = -1;
+			pthread_mutex_unlock(&data->beg_stop_lock);
 			printf("%ld %d died\n", current_time(&data->philo[i]),
 				data->philo[i].id);
 			return (-1);

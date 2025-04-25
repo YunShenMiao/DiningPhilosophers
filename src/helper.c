@@ -6,7 +6,7 @@
 /*   By: jwardeng <jwardeng@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/21 11:20:52 by jwardeng          #+#    #+#             */
-/*   Updated: 2025/04/24 16:16:36 by jwardeng         ###   ########.fr       */
+/*   Updated: 2025/04/25 17:19:42 by jwardeng         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ int	ft_atoi(const char *str)
 		count++;
 	}
 	if (str[count] != '\0')
-	return(-1);
+		return (-1);
 	if (cneg == -1)
 		res = res * cneg;
 	return (res);

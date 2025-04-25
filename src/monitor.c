@@ -6,7 +6,7 @@
 /*   By: jwardeng <jwardeng@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 18:25:12 by jwardeng          #+#    #+#             */
-/*   Updated: 2025/04/24 15:32:53 by jwardeng         ###   ########.fr       */
+/*   Updated: 2025/04/25 17:19:21 by jwardeng         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,6 +78,7 @@ void	*monitor_fun(void *arg)
 			return (NULL);
 		if (check_meals(data, i) == -1)
 			return (NULL);
+		usleep(50);
 	}
 	return (NULL);
 }

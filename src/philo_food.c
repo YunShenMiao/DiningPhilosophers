@@ -6,7 +6,7 @@
 /*   By: jwardeng <jwardeng@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/26 13:37:48 by jwardeng          #+#    #+#             */
-/*   Updated: 2025/04/24 14:25:16 by jwardeng         ###   ########.fr       */
+/*   Updated: 2025/04/25 17:18:55 by jwardeng         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,32 +18,8 @@ void	one_philo(t_philo *philo, t_data *data)
 	print_string("died", philo, data);
 }
 
-int	equality(t_philo *philo, t_data *data)
-{
-	int	i;
-
-	i = 0;
-	while (i < data->philo_nbr)
-	{
-		pthread_mutex_lock(&data->meal_lock);
-		if (philo->lastmeal > data->philo[i].lastmeal)
-		{
-			pthread_mutex_unlock(&data->meal_lock);
-			return (-1);
-		}
-		pthread_mutex_unlock(&data->meal_lock);
-		i++;
-	}
-	return (1);
-}
-
 void	take_forks(t_philo *philo, t_philo *righty, t_data *data)
 {
-	// if (data->philo_nbr % 2 != 0)
-	// {
-	// 	while (equality(philo, data) == -1)
-	// 		ft_usleep(philo, 10);
-	// }
 	if (philo->id % 2 == 1)
 	{
 		pthread_mutex_lock(&philo->lock);
@@ -98,3 +74,22 @@ int	schnacki(t_philo *philo, t_data *data)
 	return_forks(philo, righty);
 	return (0);
 }
+
+/* int	equality(t_philo *philo, t_data *data)
+{
+	int	i;
+
+	i = 0;
+	while (i < data->philo_nbr)
+	{
+		pthread_mutex_lock(&data->meal_lock);
+		if (philo->lastmeal > data->philo[i].lastmeal)
+		{
+			pthread_mutex_unlock(&data->meal_lock);
+			return (-1);
+		}
+		pthread_mutex_unlock(&data->meal_lock);
+		i++;
+	}
+	return (1);
+} */

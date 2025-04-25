@@ -6,7 +6,7 @@
 /*   By: jwardeng <jwardeng@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/21 16:31:52 by jwardeng          #+#    #+#             */
-/*   Updated: 2025/04/24 16:42:57 by jwardeng         ###   ########.fr       */
+/*   Updated: 2025/04/25 17:17:47 by jwardeng         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,11 @@
 void	thinky(t_philo *philo, t_data *data)
 {
 	print_string("is thinking", philo, data);
+	if (data->philo_nbr % 2 == 1 && philo->tt_sleep < philo->tt_eat)
+	{
+		usleep((philo->tt_eat - philo->tt_sleep) * 1000);
+		usleep(1000);
+	}
 }
 
 void	schleepi(t_philo *philo, t_data *data)
@@ -57,33 +62,32 @@ void	wait_threads(t_data *data)
 		pthread_mutex_unlock(&data->beg_stop_lock);
 		if (begin == 1)
 			break ;
-		usleep(100);
+		usleep(50);
 	}
 }
 
 void	*philo_fun(void *arg)
 {
 	t_philo_con	*philocontext;
-	t_data			*data;
-	t_philo			*philo;
+	t_data		*data;
+	t_philo		*philo;
 
 	philocontext = (t_philo_con *)arg;
 	data = philocontext->data;
 	philo = philocontext->philo;
-	free(philocontext);
 	wait_threads(data);
 	if (data->philo_nbr == 1)
 		return (one_philo(philo, data), NULL);
 	if (philo->id % 2 == 0)
-		ft_usleep(philo, 20/* philo[0].tt_eat / 2 */);
+		ft_usleep(philo, philo[0].tt_eat / 2);
 	while (1)
 	{
 		if (forever_schleepi(data) == -1)
 			break ;
-		thinky(philo, data);
 		schnacki(philo, data);
 		schleepi(philo, data);
+		thinky(philo, data);
 	}
-	usleep(500);
+	free(philocontext);
 	return (NULL);
 }

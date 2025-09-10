@@ -6,7 +6,7 @@
 /*   By: jwardeng <jwardeng@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/21 11:17:59 by jwardeng          #+#    #+#             */
-/*   Updated: 2025/04/25 17:21:07 by jwardeng         ###   ########.fr       */
+/*   Updated: 2025/04/27 17:41:15 by jwardeng         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ typedef struct s_philo_con
 /* ************************************************************************** */
 
 //      helper
-int					ft_atoi(const char *str);
+int					c_atoi(const char *str);
 long				current_time(t_philo *philo);
 void				print_string(const char *str, t_philo *philo, t_data *data);
 void				gettime(t_data **data);
@@ -80,6 +80,7 @@ int					forever_schleepi(t_data *data);
 void				one_philo(t_philo *philo, t_data *data);
 //		data initialization
 int					init_data(int argc, char *argv[], t_data **data);
+void				start_message(void);
 // 		monitoring
 void				*monitor_fun(void *arg);
 

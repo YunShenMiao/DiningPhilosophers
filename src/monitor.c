@@ -6,11 +6,9 @@
 /*   By: jwardeng <jwardeng@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/10 18:25:12 by jwardeng          #+#    #+#             */
-/*   Updated: 2025/04/25 17:19:21 by jwardeng         ###   ########.fr       */
+/*   Updated: 2025/04/27 17:54:01 by jwardeng         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-// meal mutex aendern!!! ueberlegen mit checks und so
 
 #include "philo.h"
 
@@ -78,7 +76,8 @@ void	*monitor_fun(void *arg)
 			return (NULL);
 		if (check_meals(data, i) == -1)
 			return (NULL);
-		usleep(50);
 	}
 	return (NULL);
 }
+
+//usleep(150);

@@ -6,37 +6,30 @@
 /*   By: jwardeng <jwardeng@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/21 11:15:18 by jwardeng          #+#    #+#             */
-/*   Updated: 2025/04/25 17:18:12 by jwardeng         ###   ########.fr       */
+/*   Updated: 2025/04/27 17:43:50 by jwardeng         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-// print messages after eaten enough times,
-// eaten check sometimes work sometimes not?
-// issue if deathtime is smaller eattime
-
-// starttime -> last_meal issue
-// mutex lock on death
-// maybe lock on init threads until all threads are initia;ized
-// valgrind - hellgrind
-
-// 2) go through code &subj pdf again before continue
-// 3) protect memory
-// 4) work on the philo_fun -> different functions, etc.:
-// need to change philosopher dies, program ends
-// need to know which philo access to which fork (for1, 2, 3etc)
-//	+ generally mutext forkkram
-// prcoesses stop as soon as one philo dies!!
-
 #include "philo.h"
+
+void	print_error(int type)
+{
+	if (type == 1)
+		write(2, "Wrong amount of arguments\n", 26);
+	else if (type == 2)
+		write(2, "Invalid input\n", 14);
+	else
+		write(2, "Initialization error\n", 21);
+}
 
 int	check_input(int argc, char *argv[])
 {
-	if (ft_atoi(argv[1]) <= 0 || ft_atoi(argv[2]) < 0 || ft_atoi(argv[3]) < 0
-		|| ft_atoi(argv[4]) < 0)
+	if (c_atoi(argv[1]) <= 0 || c_atoi(argv[2]) <= 0 || c_atoi(argv[3]) <= 0
+		|| c_atoi(argv[4]) <= 0)
 		return (-1);
 	if (argc == 6)
 	{
-		if (ft_atoi(argv[5]) < 0)
+		if (c_atoi(argv[5]) < 0)
 			return (-1);
 	}
 	return (1);
@@ -76,11 +69,12 @@ int	main(int argc, char *argv[])
 	t_data	*data;
 
 	if (argc < 5 || argc > 6)
-		return (printf("Wrong amount of arguments\n"), 1);
+		return (print_error(1), 1);
 	if (check_input(argc, argv) == -1)
-		return (printf("invalid input\n"), 1);
+		return (print_error(2), 1);
+	start_message();
 	if (init_data(argc, argv, &data) == -1)
-		return (printf("Initialization error\n"), 1);
+		return (print_error(3), 1);
 	if (end_simulation(data) == -1)
 		return (1);
 	return (0);

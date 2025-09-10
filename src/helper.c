@@ -6,7 +6,7 @@
 /*   By: jwardeng <jwardeng@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/21 11:20:52 by jwardeng          #+#    #+#             */
-/*   Updated: 2025/04/25 17:19:42 by jwardeng         ###   ########.fr       */
+/*   Updated: 2025/04/27 17:41:07 by jwardeng         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,8 +51,7 @@ long	current_time(t_philo *philo)
 	return (ms);
 }
 
-// converts str to int skipping ws 1+ or -
-int	ft_atoi(const char *str)
+int	c_atoi(const char *str)
 {
 	int	count;
 	int	cneg;

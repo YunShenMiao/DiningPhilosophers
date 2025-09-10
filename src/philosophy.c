@@ -6,22 +6,16 @@
 /*   By: jwardeng <jwardeng@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/02/21 16:31:52 by jwardeng          #+#    #+#             */
-/*   Updated: 2025/04/25 17:17:47 by jwardeng         ###   ########.fr       */
+/*   Updated: 2025/04/29 12:31:06 by jwardeng         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-// change: monitor is checking last meal constantly for all philos,
-// sets bool finish to 1 immediately
-// in philo checks the bool to stop the program
-// as soon as 1 & thread prints the message
-// mutex to protect philo from die when start eat.
 
 #include "philo.h"
 
 void	thinky(t_philo *philo, t_data *data)
 {
 	print_string("is thinking", philo, data);
-	if (data->philo_nbr % 2 == 1 && philo->tt_sleep < philo->tt_eat)
+	if (data->philo_nbr % 2 == 1 && philo->tt_sleep <= philo->tt_eat)
 	{
 		usleep((philo->tt_eat - philo->tt_sleep) * 1000);
 		usleep(1000);

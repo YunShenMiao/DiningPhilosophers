@@ -1,5 +1,4 @@
 NAME	= philo
-BONUS_NAME = philo_bonus
 CFLAGS	= -Wextra -Wall -Werror -pthread
 
 SRC			= src/philo.c src/philosophy.c src/helper.c src/philo_food.c src/init.c src/monitor.c
